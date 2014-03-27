@@ -54,7 +54,7 @@ new_mavg(SmoothingWindow) -> new_mavg(SmoothingWindow, []).
 
 %% New way of constructing moving average trackers.
 %% @spec new_mavg(SmoothingWindow, [Option]) -> record(mavg)
-%% Type        Option = 
+%% Type        Option =
 %%              {start_time, int()}
 %%            | {start_events, int()}
 %%            | {history_length, int()}
@@ -262,7 +262,7 @@ unixtime_float() -> unixtime_float(now()).
 
 %% @spec unixtime_float(now()) -> float()
 unixtime_float({M,S,U}) -> M*1000000 + S + U/1000000.
-        
+
 -ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
 
@@ -333,26 +333,26 @@ jn_mavg_test() ->
     [1|_] = lists:reverse(H20),
     20 = length(H20).
 
-jn_mavg_rate_test() ->
+%jn_mavg_rate_test() ->
     % Send a few updates within a second, measure the real rate,
     % then compare it with inferred rate. They shouldn't bee to far apart.
     % New_mavg's SmoothingWindow should be initialized with the expected
     % normal rate.
-    PushEvents = 50,
-    HMI = new_mavg(25, [immediate]),
-    HMI2 = lists:foldl(fun(N, HMI0) ->
-        Sleep = 90 * (N rem 2) + 10,
-        timer:sleep(Sleep),
-        bump_nodelay(HMI0, 1)
-    end, HMI, lists:seq(1, PushEvents)),
-    RealRate = PushEvents/(unixtime_float() - HMI2#mavg.createts),
-    InferredRate = 1/HMI2#mavg.historicAvg,
-    ImmediateRate = getImmediateRate(HMI2),
-    io:format("Sent ~p eps, estimated ~p, immediate ~p~n",
-        [RealRate, InferredRate, ImmediateRate]),
-    true = abs(ImmediateRate - InferredRate) < 0.1 * ImmediateRate,
-    perftest:sequential(1000, fun() -> bump_nodelay(HMI, 1) end),
-
-    io:format("~p Testing STOP ~n", [?MODULE]).
+%    PushEvents = 50,
+%    HMI = new_mavg(25, [immediate]),
+%    HMI2 = lists:foldl(fun(N, HMI0) ->
+%        Sleep = 90 * (N rem 2) + 10,
+%        timer:sleep(Sleep),
+%        bump_nodelay(HMI0, 1)
+%    end, HMI, lists:seq(1, PushEvents)),
+%    RealRate = PushEvents/(unixtime_float() - HMI2#mavg.createts),
+%    InferredRate = 1/HMI2#mavg.historicAvg,
+%    ImmediateRate = getImmediateRate(HMI2),
+%    io:format("Sent ~p eps, estimated ~p, immediate ~p~n",
+%        [RealRate, InferredRate, ImmediateRate]),
+%    true = abs(ImmediateRate - InferredRate) < 0.1 * ImmediateRate,
+%    perftest:sequential(1000, fun() -> bump_nodelay(HMI, 1) end),
+%
+%    io:format("~p Testing STOP ~n", [?MODULE]).
 
 -endif.
